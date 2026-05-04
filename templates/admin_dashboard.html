@@ -296,11 +296,25 @@
             transition: width 0.8s ease;
         }
 
-        .file-type-bar-fill.pdf { background: #ef4444; }
-        .file-type-bar-fill.image { background: #3b82f6; }
-        .file-type-bar-fill.video { background: #a855f7; }
-        .file-type-bar-fill.audio { background: #ec4899; }
-        .file-type-bar-fill.document { background: #94a3b8; }
+        .file-type-bar-fill.pdf {
+            background: #ef4444;
+        }
+
+        .file-type-bar-fill.image {
+            background: #3b82f6;
+        }
+
+        .file-type-bar-fill.video {
+            background: #a855f7;
+        }
+
+        .file-type-bar-fill.audio {
+            background: #ec4899;
+        }
+
+        .file-type-bar-fill.document {
+            background: #94a3b8;
+        }
 
         /* Recent Files */
         .recent-files-list {
@@ -450,12 +464,68 @@
             }
         }
 
+        @media (max-width: 768px) {
+            .header-inner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            .nav-links {
+                width: 100%;
+                justify-content: space-between;
+                overflow-x: auto;
+                padding-bottom: 8px;
+            }
+            .main {
+                padding: 16px;
+            }
+            .welcome-banner {
+                padding: 24px;
+            }
+            .welcome-banner h1 {
+                font-size: 1.4rem;
+            }
+            .welcome-stats {
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .upload-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .user-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+
         @media (max-width: 640px) {
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-            .welcome-stats {
+            .file-row {
+                flex-direction: column;
+                align-items: flex-start;
                 gap: 16px;
+            }
+            .file-actions {
+                align-self: flex-end;
+            }
+            .modal-card {
+                width: 95%;
+                margin: 20px auto;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            .pagination-container {
+                flex-direction: column;
+                gap: 12px;
             }
         }
 
@@ -934,6 +1004,70 @@
                 width: 95%;
             }
         }
+        /* Pagination */
+        .pagination-container {
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .pagination-info {
+            font-size: .85rem;
+            font-weight: 700;
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        .pagination-info b {
+            color: var(--gulu);
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .page-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .85rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(0, 0, 0, 0.03);
+            color: rgba(0, 0, 0, 0.4);
+            border: none;
+        }
+
+        .page-num.active {
+            background: var(--gulu);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(90, 154, 181, 0.3);
+        }
+
+        .page-num:hover:not(.active) {
+            background: var(--gulu-l);
+            color: var(--gulu);
+        }
+
+        .page-num:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .pagination-container {
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
     </style>
 </head>
 
@@ -999,10 +1133,13 @@
                     <label>Usuario</label>
                     <input type="text" id="editUsername" required />
                 </div>
-                <div>
+                <div style="position: relative;">
                     <label>Nueva Contraseña</label>
-                    <input type="password" id="editPassword" placeholder="Dejar vacío para no cambiar" />
-                    <p class="hint">Solo rellena si deseas cambiar la contraseña</p>
+                    <input type="password" id="editPassword" placeholder="Nueva contraseña" style="padding-right: 44px;" />
+                    <span class="material-symbols-outlined" 
+                        onclick="const p = document.getElementById('editPassword'); p.type = p.type === 'password' ? 'text' : 'password'; this.textContent = p.type === 'password' ? 'visibility' : 'visibility_off';"
+                        style="position: absolute; right: 12px; top: 38px; cursor: pointer; color: var(--gulu); opacity: 0.6; user-select: none;">visibility</span>
+                    <p class="hint">Solo rellena si deseas cambiar la contraseña (o deja vacío)</p>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1058,7 +1195,8 @@
                 Subir Archivo
             </button>
             {% if role == 'admin' %}
-            <button class="quick-action-btn secondary" onclick="document.getElementById('createUserCard').scrollIntoView({behavior: 'smooth'})">
+            <button class="quick-action-btn secondary"
+                onclick="document.getElementById('createUserCard').scrollIntoView({behavior: 'smooth'})">
                 <span class="material-symbols-outlined">person_add</span>
                 Nuevo Maestro
             </button>
@@ -1093,12 +1231,15 @@
                             <span class="file-type-count">{{ stats.files_by_type.pdf }}</span>
                         </div>
                         <div class="file-type-bar">
-                            <div class="file-type-bar-fill pdf" style="width: {% if stats.total_files > 0 %}{{ (stats.files_by_type.pdf / stats.total_files * 100)|round }}%{% else %}0%{% endif %};"></div>
+                            <div class="file-type-bar-fill pdf"
+                                style="width: {% if stats.total_files > 0 %}{{ (stats.files_by_type.pdf / stats.total_files * 100)|round }}%{% else %}0%{% endif %};">
+                            </div>
                         </div>
 
                         <div class="file-type-item">
                             <div class="file-type-info">
-                                <div class="file-type-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+                                <div class="file-type-icon"
+                                    style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
                                     <span class="material-symbols-outlined">image</span>
                                 </div>
                                 <span class="file-type-name">Imágenes</span>
@@ -1106,12 +1247,15 @@
                             <span class="file-type-count">{{ stats.files_by_type.image }}</span>
                         </div>
                         <div class="file-type-bar">
-                            <div class="file-type-bar-fill image" style="width: {% if stats.total_files > 0 %}{{ (stats.files_by_type.image / stats.total_files * 100)|round }}%{% else %}0%{% endif %};"></div>
+                            <div class="file-type-bar-fill image"
+                                style="width: {% if stats.total_files > 0 %}{{ (stats.files_by_type.image / stats.total_files * 100)|round }}%{% else %}0%{% endif %};">
+                            </div>
                         </div>
 
                         <div class="file-type-item">
                             <div class="file-type-info">
-                                <div class="file-type-icon" style="background: rgba(168, 85, 247, 0.1); color: #a855f7;">
+                                <div class="file-type-icon"
+                                    style="background: rgba(168, 85, 247, 0.1); color: #a855f7;">
                                     <span class="material-symbols-outlined">movie</span>
                                 </div>
                                 <span class="file-type-name">Videos</span>
@@ -1119,12 +1263,15 @@
                             <span class="file-type-count">{{ stats.files_by_type.video }}</span>
                         </div>
                         <div class="file-type-bar">
-                            <div class="file-type-bar-fill video" style="width: {% if stats.total_files > 0 %}{{ (stats.files_by_type.video / stats.total_files * 100)|round }}%{% else %}0%{% endif %};"></div>
+                            <div class="file-type-bar-fill video"
+                                style="width: {% if stats.total_files > 0 %}{{ (stats.files_by_type.video / stats.total_files * 100)|round }}%{% else %}0%{% endif %};">
+                            </div>
                         </div>
 
                         <div class="file-type-item">
                             <div class="file-type-info">
-                                <div class="file-type-icon" style="background: rgba(236, 72, 153, 0.1); color: #ec4899;">
+                                <div class="file-type-icon"
+                                    style="background: rgba(236, 72, 153, 0.1); color: #ec4899;">
                                     <span class="material-symbols-outlined">music_note</span>
                                 </div>
                                 <span class="file-type-name">Audio</span>
@@ -1132,7 +1279,9 @@
                             <span class="file-type-count">{{ stats.files_by_type.audio }}</span>
                         </div>
                         <div class="file-type-bar">
-                            <div class="file-type-bar-fill audio" style="width: {% if stats.total_files > 0 %}{{ (stats.files_by_type.audio / stats.total_files * 100)|round }}%{% else %}0%{% endif %};"></div>
+                            <div class="file-type-bar-fill audio"
+                                style="width: {% if stats.total_files > 0 %}{{ (stats.files_by_type.audio / stats.total_files * 100)|round }}%{% else %}0%{% endif %};">
+                            </div>
                         </div>
 
 
@@ -1154,10 +1303,14 @@
                             {% set icon = 'draft' %}
                             {% set color = '#94a3b8' %}
                             {% set bg = 'rgba(148, 163, 184, 0.1)' %}
-                            {% if file.type == 'image' %}{% set icon = 'image' %}{% set color = '#3b82f6' %}{% set bg = 'rgba(59, 130, 246, 0.1)' %}
-                            {% elif file.type == 'video' %}{% set icon = 'movie' %}{% set color = '#a855f7' %}{% set bg = 'rgba(168, 85, 247, 0.1)' %}
-                            {% elif file.type == 'audio' %}{% set icon = 'music_note' %}{% set color = '#ec4899' %}{% set bg = 'rgba(236, 72, 153, 0.1)' %}
-                            {% elif file.type == 'pdf' %}{% set icon = 'picture_as_pdf' %}{% set color = '#ef4444' %}{% set bg = 'rgba(239, 68, 68, 0.1)' %}
+                            {% if file.type == 'image' %}{% set icon = 'image' %}{% set color = '#3b82f6' %}{% set bg =
+                            'rgba(59, 130, 246, 0.1)' %}
+                            {% elif file.type == 'video' %}{% set icon = 'movie' %}{% set color = '#a855f7' %}{% set bg
+                            = 'rgba(168, 85, 247, 0.1)' %}
+                            {% elif file.type == 'audio' %}{% set icon = 'music_note' %}{% set color = '#ec4899' %}{%
+                            set bg = 'rgba(236, 72, 153, 0.1)' %}
+                            {% elif file.type == 'pdf' %}{% set icon = 'picture_as_pdf' %}{% set color = '#ef4444' %}{%
+                            set bg = 'rgba(239, 68, 68, 0.1)' %}
                             {% endif %}
                             <div class="recent-file-icon" style="background: {{ bg }}; color: {{ color }};">
                                 <span class="material-symbols-outlined">{{ icon }}</span>
@@ -1165,9 +1318,10 @@
                             <div class="recent-file-info">
                                 <div class="recent-file-name">{{ file.name }}</div>
                                 <div class="recent-file-size">{{ (file.size / 1024)|round|int }} KB
-                                {% if file.uploader_name %}
-                                 • {{ file.uploader_name }} el {{ file.upload_date.split(' ')[0] if file.upload_date else '' }}
-                                {% endif %}
+                                    {% if file.uploader_name %}
+                                    • {{ file.uploader_name }} el {{ file.upload_date.split(' ')[0] if file.upload_date
+                                    else '' }}
+                                    {% endif %}
                                 </div>
                             </div>
                             <span class="material-symbols-outlined" style="color: rgba(0,0,0,0.3);">open_in_new</span>
@@ -1176,7 +1330,8 @@
                     </div>
                     {% else %}
                     <div style="text-align: center; padding: 32px; color: rgba(0,0,0,0.4);">
-                        <span class="material-symbols-outlined" style="font-size: 48px; margin-bottom: 12px;">folder_open</span>
+                        <span class="material-symbols-outlined"
+                            style="font-size: 48px; margin-bottom: 12px;">folder_open</span>
                         <p>No hay archivos subidos</p>
                     </div>
                     {% endif %}
@@ -1272,13 +1427,16 @@
                             onfocus="this.style.borderColor='var(--gulu)'"
                             onblur="this.style.borderColor='rgba(0,0,0,0.1)'" />
                     </div>
-                    <div>
+                    <div style="position: relative;">
                         <label for="password"
                             style="font-weight: 700; color: var(--gulu-dark); display: block; margin-bottom: 8px;">Contraseña</label>
-                        <input type="password" id="password" name="password" required
-                            style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); font-family: inherit; outline: none; transition: border 0.3s;"
+                        <input type="password" id="password" name="password" placeholder="Contraseña" required
+                            style="width: 100%; padding: 12px 16px; padding-right: 44px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); font-family: inherit; outline: none; transition: border 0.3s;"
                             onfocus="this.style.borderColor='var(--gulu)'"
                             onblur="this.style.borderColor='rgba(0,0,0,0.1)'" />
+                        <span class="material-symbols-outlined" 
+                            onclick="const p = document.getElementById('password'); p.type = p.type === 'password' ? 'text' : 'password'; this.textContent = p.type === 'password' ? 'visibility' : 'visibility_off';"
+                            style="position: absolute; right: 12px; top: 40px; cursor: pointer; color: var(--gulu); opacity: 0.6; user-select: none;">visibility</span>
                     </div>
                     <button type="submit" class="upload-btn" style="align-self: flex-start; margin-top: 8px;">
                         <span class="material-symbols-outlined">person_add</span>
@@ -1330,6 +1488,20 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                <div class="pagination-container" id="userPagination">
+                    <div class="pagination-info">
+                        Mostrando <b id="userPageRange">1-5</b> de <b id="userTotalCount">{{ users|length }}</b> maestros
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="page-num" id="prevUserPage" title="Anterior">
+                            <span class="material-symbols-outlined">chevron_left</span>
+                        </button>
+                        <div id="userPageNumbers" style="display: flex; gap: 4px;"></div>
+                        <button class="page-num" id="nextUserPage" title="Siguiente">
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
                 {% else %}
                 <div class="empty-users">
                     <span class="material-symbols-outlined">person_off</span>
@@ -1344,7 +1516,9 @@
         <div class="section-card" id="uploadCard">
             <div class="section-header">
                 <h2><span class="material-symbols-outlined">upload_file</span> Subir Archivos</h2>
-                <span id="fileCounter" style="font-weight:800; color:var(--gulu); opacity:0.6; font-size:.9rem; display:none;">0 archivos seleccionados</span>
+                <span id="fileCounter"
+                    style="font-weight:800; color:var(--gulu); opacity:0.6; font-size:.9rem; display:none;">0 archivos
+                    seleccionados</span>
             </div>
             <div class="section-body">
                 <form id="uploadForm">
@@ -1356,7 +1530,8 @@
                     </div>
 
                     <!-- List of selected files with individual metadata -->
-                    <div id="fileListPreview" style="margin-top: 16px; display: none; flex-direction: column; gap: 12px;">
+                    <div id="fileListPreview"
+                        style="margin-top: 16px; display: none; flex-direction: column; gap: 12px;">
                         <!-- Items with individual Grade/Subject selects will be injected here -->
                     </div>
 
@@ -1395,14 +1570,22 @@
                         <div class="file-details">
                             <div class="file-name">{{ file.name }}</div>
                             <div class="file-meta">
-                                {{ file.size_display }} • {{ file.ext|upper }} 
+                                {{ file.size_display }} • {{ file.ext|upper }}
                                 {% if file.uploader_name %}
-                                • <span class="material-symbols-outlined" style="font-size: 11px; vertical-align: middle;">person</span> {{ file.uploader_name }}
-                                • <span class="material-symbols-outlined" style="font-size: 11px; vertical-align: middle;">calendar_today</span> {{ file.upload_date }}
+                                • <span class="material-symbols-outlined"
+                                    style="font-size: 11px; vertical-align: middle;">person</span> {{ file.uploader_name
+                                }}
+                                • <span class="material-symbols-outlined"
+                                    style="font-size: 11px; vertical-align: middle;">calendar_today</span> {{
+                                file.upload_date }}
                                 {% endif %}
                                 <div style="margin-top: 4px; display: flex; gap: 8px; flex-wrap: wrap;">
-                                    <span style="background: rgba(90, 154, 181, 0.1); color: var(--gulu); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 800;">📚 {{ file.grade }}</span>
-                                    <span style="background: rgba(99, 102, 241, 0.1); color: var(--gulu-accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 800;">💡 {{ file.subject }}</span>
+                                    <span
+                                        style="background: rgba(90, 154, 181, 0.1); color: var(--gulu); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 800;">📚
+                                        {{ file.grade }}</span>
+                                    <span
+                                        style="background: rgba(99, 102, 241, 0.1); color: var(--gulu-accent); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 800;">💡
+                                        {{ file.subject }}</span>
                                 </div>
                             </div>
                         </div>
@@ -1417,6 +1600,20 @@
                     </div>
                 </div>
                 {% endfor %}
+            </div>
+            <div class="pagination-container" id="filePagination">
+                <div class="pagination-info">
+                    Mostrando <b id="filePageRange">1-10</b> de <b id="fileTotalCount">{{ files|length }}</b> ítems
+                </div>
+                <div class="pagination-controls">
+                    <button class="page-num" id="prevFilePage" title="Anterior">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    <div id="filePageNumbers" style="display: flex; gap: 4px;"></div>
+                    <button class="page-num" id="nextFilePage" title="Siguiente">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+                </div>
             </div>
         </div>
     </main>
@@ -1482,7 +1679,7 @@
 
         function updateFileDisplay() {
             fileListPreview.innerHTML = '';
-            
+
             if (selectedFiles.length === 0) {
                 fileListPreview.style.display = 'none';
                 fileCounter.style.display = 'none';
@@ -1500,7 +1697,7 @@
                 const ext = file.name.split('.').pop().toLowerCase();
                 let icon = 'description';
                 let color = '#94a3b8';
-                
+
                 if (['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext)) { icon = 'image'; color = '#3b82f6'; }
                 else if (['mp4', 'mov', 'avi'].includes(ext)) { icon = 'movie'; color = '#a855f7'; }
                 else if (['mp3', 'wav', 'ogg'].includes(ext)) { icon = 'music_note'; color = '#ec4899'; }
@@ -1516,7 +1713,7 @@
                         </div>
                         <div style="flex:1; overflow:hidden;">
                             <div style="text-overflow:ellipsis; white-space:nowrap; overflow:hidden; font-weight:700; font-size:.95rem; color:var(--gulu-dark);">${file.name}</div>
-                            <div style="font-size:.75rem; color:rgba(0,0,0,0.4); font-weight:600;">${(file.size/1024).toFixed(0)} KB</div>
+                            <div style="font-size:.75rem; color:rgba(0,0,0,0.4); font-weight:600;">${(file.size / 1024).toFixed(0)} KB</div>
                         </div>
                         <button type="button" onclick="removeFile(${index})" style="background:rgba(239, 68, 68, 0.1); border:none; color:#ef4444; cursor:pointer; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition: all 0.2s;">
                             <span class="material-symbols-outlined" style="font-size:18px;">close</span>
@@ -1570,6 +1767,7 @@
             try {
                 const r = await fetch('/admin/upload', { method: 'POST', body: fd });
                 const d = await r.json();
+                //Observer
                 if (d.success) {
                     status.textContent = `¡Listo! ${d.count} archivos guardados.`;
                     status.style.color = '#10b981';
@@ -1809,6 +2007,219 @@
                 showToast('Error de red', 'error');
             }
         }
+
+        // ============ USER PAGINATION ============
+        let userCurrentPage = 1;
+        const usersPerPage = 5;
+
+        function updateUsersPagination() {
+            const rows = Array.from(document.querySelectorAll('.user-row'));
+            const totalUsers = rows.length;
+            const totalPages = Math.ceil(totalUsers / usersPerPage);
+
+            if (totalUsers === 0) {
+                document.getElementById('userPagination').style.display = 'none';
+                return;
+            } else {
+                document.getElementById('userPagination').style.display = 'flex';
+            }
+
+            // Ensure current page is valid
+            if (userCurrentPage > totalPages) userCurrentPage = totalPages || 1;
+            if (userCurrentPage < 1) userCurrentPage = 1;
+
+            const start = (userCurrentPage - 1) * usersPerPage;
+            const end = start + usersPerPage;
+
+            rows.forEach((row, index) => {
+                if (index >= start && index < end) {
+                    if (row.style.display === 'none') {
+                        row.style.display = '';
+                        gsap.fromTo(row, { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.3, delay: (index - start) * 0.05 });
+                    }
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Update info
+            const rangeEnd = Math.min(end, totalUsers);
+            document.getElementById('userPageRange').textContent = `${totalUsers === 0 ? 0 : start + 1}-${rangeEnd}`;
+            document.getElementById('userTotalCount').textContent = totalUsers;
+
+            // Update buttons
+            document.getElementById('prevUserPage').disabled = userCurrentPage === 1;
+            document.getElementById('nextUserPage').disabled = userCurrentPage === totalPages;
+
+            // Page numbers
+            const pageNumbers = document.getElementById('userPageNumbers');
+            pageNumbers.innerHTML = '';
+
+            // Simple pagination: 1 2 3 ...
+            for (let i = 1; i <= totalPages; i++) {
+                if (totalPages > 7) {
+                    // Show first, last, and current surroundings
+                    if (i === 1 || i === totalPages || (i >= userCurrentPage - 1 && i <= userCurrentPage + 1)) {
+                        addPageButton(i);
+                    } else if (i === userCurrentPage - 2 || i === userCurrentPage + 2) {
+                        const dots = document.createElement('span');
+                        dots.textContent = '...';
+                        dots.style.color = 'rgba(0,0,0,0.2)';
+                        dots.style.fontWeight = '800';
+                        dots.style.padding = '0 4px';
+                        pageNumbers.appendChild(dots);
+                    }
+                } else {
+                    addPageButton(i);
+                }
+            }
+        }
+
+        function addPageButton(i) {
+            const btn = document.createElement('button');
+            btn.className = `page-num ${i === userCurrentPage ? 'active' : ''}`;
+            btn.textContent = i;
+            btn.onclick = () => {
+                userCurrentPage = i;
+                updateUsersPagination();
+                document.getElementById('userManagementCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            };
+            document.getElementById('userPageNumbers').appendChild(btn);
+        }
+
+        document.getElementById('prevUserPage').onclick = () => {
+            if (userCurrentPage > 1) {
+                userCurrentPage--;
+                updateUsersPagination();
+            }
+        };
+
+        document.getElementById('nextUserPage').onclick = () => {
+            const rows = document.querySelectorAll('.user-row');
+            if (userCurrentPage < Math.ceil(rows.length / usersPerPage)) {
+                userCurrentPage++;
+                updateUsersPagination();
+            }
+        };
+
+        // Initialize pagination
+        updateUsersPagination();
+
+        // Hook into deleteUser to refresh pagination
+        const originalDeleteUser = deleteUser;
+        deleteUser = async function(row) {
+            await originalDeleteUser(row);
+            updateUsersPagination();
+        };
+
+        // Hook into showToast/Create logic if needed, but since it's a page reload for create, it's fine.
+        // Actually, the edit user logic doesn't reload, so it's fine too.
+
+        // ============ FILE PAGINATION ============
+        let fileCurrentPage = 1;
+        const filesPerPage = 10;
+
+        function updateFilesPagination() {
+            const rows = Array.from(document.querySelectorAll('.file-row'));
+            const totalFiles = rows.length;
+            const totalPages = Math.ceil(totalFiles / filesPerPage);
+
+            if (totalFiles === 0) {
+                document.getElementById('filePagination').style.display = 'none';
+                return;
+            } else {
+                document.getElementById('filePagination').style.display = 'flex';
+            }
+
+            // Ensure current page is valid
+            if (fileCurrentPage > totalPages) fileCurrentPage = totalPages || 1;
+            if (fileCurrentPage < 1) fileCurrentPage = 1;
+
+            const start = (fileCurrentPage - 1) * filesPerPage;
+            const end = start + filesPerPage;
+
+            rows.forEach((row, index) => {
+                if (index >= start && index < end) {
+                    if (row.style.display === 'none') {
+                        row.style.display = '';
+                        gsap.fromTo(row, { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.3, delay: (index - start) * 0.03 });
+                    }
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Update info
+            const rangeEnd = Math.min(end, totalFiles);
+            document.getElementById('filePageRange').textContent = `${totalFiles === 0 ? 0 : start + 1}-${rangeEnd}`;
+            document.getElementById('fileTotalCount').textContent = totalFiles;
+
+            // Update buttons
+            document.getElementById('prevFilePage').disabled = fileCurrentPage === 1;
+            document.getElementById('nextFilePage').disabled = fileCurrentPage === totalPages;
+
+            // Page numbers
+            const pageNumbers = document.getElementById('filePageNumbers');
+            pageNumbers.innerHTML = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (totalPages > 7) {
+                    if (i === 1 || i === totalPages || (i >= fileCurrentPage - 1 && i <= fileCurrentPage + 1)) {
+                        addFilePageButton(i);
+                    } else if (i === fileCurrentPage - 2 || i === fileCurrentPage + 2) {
+                        const dots = document.createElement('span');
+                        dots.textContent = '...';
+                        dots.style.color = 'rgba(0,0,0,0.2)';
+                        dots.style.fontWeight = '800';
+                        dots.style.padding = '0 4px';
+                        pageNumbers.appendChild(dots);
+                    }
+                } else {
+                    addFilePageButton(i);
+                }
+            }
+        }
+
+        function addFilePageButton(i) {
+            const btn = document.createElement('button');
+            btn.className = `page-num ${i === fileCurrentPage ? 'active' : ''}`;
+            btn.textContent = i;
+            btn.onclick = () => {
+                fileCurrentPage = i;
+                updateFilesPagination();
+                document.getElementById('fileList').parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            };
+            document.getElementById('filePageNumbers').appendChild(btn);
+        }
+
+        document.getElementById('prevFilePage').onclick = () => {
+            if (fileCurrentPage > 1) {
+                fileCurrentPage--;
+                updateFilesPagination();
+            }
+        };
+
+        document.getElementById('nextFilePage').onclick = () => {
+            const rows = document.querySelectorAll('.file-row');
+            if (fileCurrentPage < Math.ceil(rows.length / filesPerPage)) {
+                fileCurrentPage++;
+                updateFilesPagination();
+            }
+        };
+
+        // Initialize pagination
+        updateFilesPagination();
+
+        // Hook into deleteFile to refresh pagination
+        const originalDeleteFile = deleteFile;
+        deleteFile = async function(name, btn) {
+            const row = btn.closest('.file-row');
+            // Wait for the deletion logic (original function doesn't return promise but we know it's async)
+            await originalDeleteFile(name, btn);
+            // Since originalDeleteFile is async and we need to wait for the animation/removal
+            // I'll add a small delay or check for removal
+            setTimeout(updateFilesPagination, 500);
+        };
     </script>
 </body>
 

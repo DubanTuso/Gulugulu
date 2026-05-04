@@ -552,109 +552,117 @@
                 grid-template-columns: 1fr;
                 padding: 40px 24px;
                 text-align: center;
+                min-height: auto;
+                padding-bottom: 100px;
             }
-
             .hero-content {
                 align-items: center;
-                text-align: center
+                text-align: center;
             }
-
             .bg-blur-gradient {
-                background: rgba(255, 255, 255, 0.5);
+                background: rgba(255, 255, 255, 0.6);
             }
-
             .categories {
-                justify-content: center
+                justify-content: center;
             }
-
             .hero-title .word {
-                margin: 0 8px
+                margin: 0 8px;
             }
         }
 
-        /* ============ MINIGAMES BUTON ============ */
+        @media(max-width: 768px) {
+            .header-inner {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .hero-title {
+                font-size: 2.2rem;
+            }
+            .search-bar {
+                height: 60px;
+                padding: 6px 6px 6px 16px;
+                border-width: 3px;
+                box-shadow: 0 4px 0 #0056D2;
+            }
+            .search-bar .icon {
+                font-size: 24px;
+                margin-right: 8px;
+            }
+            .search-bar input {
+                font-size: 1rem;
+            }
+            .search-btn {
+                height: 44px;
+                padding: 0 16px;
+                font-size: 0.95rem;
+            }
+            .cat-pill {
+                padding: 6px 16px 6px 6px;
+                font-size: 0.9rem;
+            }
+            .cat-pill .pill-icon {
+                width: 28px;
+                height: 28px;
+                font-size: 16px;
+            }
+            .footer {
+                font-size: 0.75rem;
+                padding: 10px;
+            }
+        }
+
+        /* ============ MINIGAMES BUTTON ============ */
         .minigames-floating {
             position: fixed;
             bottom: 40px;
             right: 40px;
-            z-index: 99;
+            z-index: 100;
         }
 
-        .minigames-floating ul {
-            position: relative;
-            margin: 0;
-            padding: 0;
+        .minigames-btn {
             display: flex;
-        }
-
-        .minigames-floating ul li {
-            position: relative;
-            list-style: none;
-            width: 170px;
-            height: 60px;
-            transform: rotate(-30deg) skew(25deg);
-        }
-
-        .minigames-floating ul li a {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-
-        .minigames-floating ul li a span {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--gulu);
-            transition: 0.5s;
-            display: flex !important;
-            justify-content: center;
             align-items: center;
-            gap: 10px;
-            color: #fff;
-            box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.1);
-        }
-
-        .minigames-floating ul li a span.content-span {
-            font-size: 1.1rem;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px 28px;
+            border-radius: 50px;
+            background: linear-gradient(135deg, var(--gulu) 0%, var(--gulu-accent) 100%);
+            color: white;
+            font-family: inherit;
             font-weight: 800;
+            font-size: 1.15rem;
+            text-decoration: none;
+            border: 4px solid #4F46E5;
+            box-shadow: 0 8px 0 #4338CA, 0 15px 30px rgba(99, 102, 241, 0.3);
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            white-space: nowrap;
         }
 
-        .minigames-floating ul li a span .material-symbols-outlined {
-            font-size: 26px !important;
+        .minigames-btn .material-symbols-outlined {
+            font-size: 28px;
         }
 
-        .minigames-floating ul li a:hover span:nth-child(5) {
-            transform: translate(40px, -40px);
-            opacity: 1;
+        .minigames-btn:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 12px 0 #4338CA, 0 20px 40px rgba(99, 102, 241, 0.4);
+            background: linear-gradient(135deg, var(--gulu-accent) 0%, var(--gulu) 100%);
         }
 
-        .minigames-floating ul li a:hover span:nth-child(4) {
-            transform: translate(30px, -30px);
-            opacity: 0.8;
+        .minigames-btn:active {
+            transform: translateY(4px) scale(0.98);
+            box-shadow: 0 4px 0 #4338CA, 0 5px 15px rgba(99, 102, 241, 0.2);
         }
 
-        .minigames-floating ul li a:hover span:nth-child(3) {
-            transform: translate(20px, -20px);
-            opacity: 0.6;
-        }
-
-        .minigames-floating ul li a:hover span:nth-child(2) {
-            transform: translate(10px, -10px);
-            opacity: 0.4;
-        }
-
-        .minigames-floating ul li a:hover span:nth-child(1) {
-            transform: translate(0, 0);
-            opacity: 0.2;
-        }
-
-        .minigames-floating ul li a:active span {
-            transition: 0.1s;
-            transform: translate(0, 0) !important;
-            opacity: 1 !important;
+        @media (max-width: 768px) {
+            .minigames-floating {
+                bottom: 24px;
+                right: 24px;
+            }
+            .minigames-btn {
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -746,20 +754,10 @@
 
     <!-- Minigames floating button -->
     <div class="minigames-floating">
-        <ul>
-            <li>
-                <a href="/minijuegos">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span class="content-span">
-                        <span class="material-symbols-outlined">sports_esports</span>
-                        Minijuegos
-                    </span>
-                </a>
-            </li>
-        </ul>
+        <a href="/minijuegos" class="minigames-btn">
+            <span class="material-symbols-outlined">sports_esports</span>
+            Minijuegos
+        </a>
     </div>
 
     <div class="footer">🐧 Gulu busca en tu Biblioteca Escolar</div>

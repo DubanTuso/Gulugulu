@@ -490,21 +490,50 @@
             }
         }
 
+        @media(max-width: 768px) {
+            .header-inner {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .minijuegos-container {
+                padding: 30px 16px 80px;
+            }
+            .page-header {
+                margin-bottom: 30px;
+            }
+            .page-title {
+                font-size: 2.5rem;
+            }
+        }
+
         @media(max-width:480px) {
             .page-title {
-                font-size: 2.2rem;
+                font-size: 2rem;
+            }
+            .page-subtitle {
+                font-size: 1rem;
             }
 
             .grade-title {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
             }
 
             .grade-card {
                 width: 100%;
+                padding: 20px;
             }
 
             .games-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 16px;
+            }
+            
+            .gc-title {
+                font-size: 1rem;
+            }
+            
+            .gc-desc {
+                font-size: 0.8rem;
             }
         }
     </style>

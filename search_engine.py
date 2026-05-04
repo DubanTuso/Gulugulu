@@ -33,9 +33,10 @@ class SearchEngine:
                 })
         print(f"Indexed {len(self.index)} files.")
 
+    #Metodo Factory
     def get_file_type(self, filename):
         ext = os.path.splitext(filename)[1].lower()
-        if ext in ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg']: return 'image'
+        if ext in ['jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.svg']: return 'image'
         if ext in ['.mp4', '.avi', '.mov', '.mkv', '.wmv']: return 'video'
         if ext in ['.mp3', '.wav', '.ogg', '.flac', '.aac']: return 'audio'
         if ext in ['.pdf']: return 'pdf'

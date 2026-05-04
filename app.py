@@ -397,6 +397,7 @@ def logout():
 
 @app.route('/admin/create_user', methods=['POST'])
 def create_user():
+    #Singleton
     if 'logged_in' not in session or session.get('role') != 'admin':
         return jsonify({'error': 'Unauthorized'}), 401
     
