@@ -64,11 +64,15 @@ def ensure_file_metadata_table():
     if not is_db_broken():
         conn = get_db_connection()
         try:
+<<<<<<< HEAD
             # Create table if not exists
+=======
+>>>>>>> af529883efc786d2f7bc628ca9b283c3fd82e2d7
             conn.execute('''
                 CREATE TABLE IF NOT EXISTS file_metadata (
                     filename TEXT PRIMARY KEY,
                     uploader_name TEXT NOT NULL,
+<<<<<<< HEAD
                     upload_date TEXT NOT NULL,
                     grade TEXT,
                     subject TEXT
@@ -84,6 +88,11 @@ def ensure_file_metadata_table():
             if 'subject' not in columns:
                 conn.execute("ALTER TABLE file_metadata ADD COLUMN subject TEXT")
                 
+=======
+                    upload_date TEXT NOT NULL
+                )
+            ''')
+>>>>>>> af529883efc786d2f7bc628ca9b283c3fd82e2d7
             conn.commit()
         except sqlite3.Error:
             pass
@@ -97,6 +106,7 @@ def get_file_metadata_map():
     if not is_db_broken():
         conn = get_db_connection()
         try:
+<<<<<<< HEAD
             rows = conn.execute("SELECT filename, uploader_name, upload_date, grade, subject FROM file_metadata").fetchall()
             for r in rows:
                 metadata_map[r['filename']] = {
@@ -104,6 +114,13 @@ def get_file_metadata_map():
                     'upload_date': r['upload_date'],
                     'grade': r['grade'] if r['grade'] else '-',
                     'subject': r['subject'] if r['subject'] else '-'
+=======
+            rows = conn.execute("SELECT filename, uploader_name, upload_date FROM file_metadata").fetchall()
+            for r in rows:
+                metadata_map[r['filename']] = {
+                    'uploader_name': r['uploader_name'],
+                    'upload_date': r['upload_date']
+>>>>>>> af529883efc786d2f7bc628ca9b283c3fd82e2d7
                 }
         except Exception:
             pass
@@ -136,6 +153,7 @@ def get_dashboard_stats(files=None):
     else:
         total_size_formatted = f"{total_size} B"
 
+<<<<<<< HEAD
     # Get most active grade
     files_by_grade = {}
     for f in files:
@@ -144,6 +162,8 @@ def get_dashboard_stats(files=None):
             files_by_grade[g] = files_by_grade.get(g, 0) + 1
     most_active_grade = max(files_by_grade, key=files_by_grade.get) if files_by_grade else '-'
 
+=======
+>>>>>>> af529883efc786d2f7bc628ca9b283c3fd82e2d7
     # Get recent files (last 3) by upload date or fallback
     recent_files = sorted([f for f in files if f.get('upload_date') and f.get('upload_date') != '-'], key=lambda x: x.get('upload_date', ''), reverse=True)[:3]
     if not recent_files:
@@ -177,6 +197,14 @@ def juego(grado, nivel):
     # Depending on the grade, render the corresponding game engine
     if grado == 1:
         return render_template('juegos/grado1.html', game_id=nivel)
+    if grado == 2:
+        return render_template('juegos/grado2.html', game_id=nivel)
+    if grado == 3:
+        return render_template('juegos/grado3.html', game_id=nivel)
+    if grado == 4:
+        return render_template('juegos/grado4.html', game_id=nivel)
+    if grado == 5:
+        return render_template('juegos/grado5.html', game_id=nivel)
     # Fallback for unconnected grades
     return redirect(url_for('minijuegos'))
 
@@ -304,12 +332,19 @@ def admin_dashboard():
     metadata_map = get_file_metadata_map()
     files_with_meta = []
     for f in search_engine.index:
+<<<<<<< HEAD
         meta = metadata_map.get(f['name'], {'uploader_name': 'Desconocido', 'upload_date': '-', 'grade': '-', 'subject': '-'})
         f_copy = f.copy()
         f_copy['uploader_name'] = meta['uploader_name']
         f_copy['upload_date'] = meta['upload_date']
         f_copy['grade'] = meta['grade']
         f_copy['subject'] = meta['subject']
+=======
+        meta = metadata_map.get(f['name'], {'uploader_name': 'Desconocido', 'upload_date': '-'})
+        f_copy = f.copy()
+        f_copy['uploader_name'] = meta['uploader_name']
+        f_copy['upload_date'] = meta['upload_date']
+>>>>>>> af529883efc786d2f7bc628ca9b283c3fd82e2d7
         files_with_meta.append(f_copy)
 
     return render_template('admin_dashboard.html',
@@ -340,6 +375,7 @@ def upload_file():
         uploader_name = session.get('name', 'Desconocido')
         now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
+<<<<<<< HEAD
         for i, file in enumerate(files):
             if file and file.filename:
                 # Match metadata by index, fallback to '-'
@@ -363,6 +399,28 @@ def upload_file():
             
     search_engine.index_files()
     return jsonify({'success': True, 'count': len(uploaded_filenames), 'filenames': uploaded_filenames})
+=======
+    if file:
+        filepath = os.path.join(BD_PATH, file.filename)
+        file.save(filepath)
+        
+        conn = get_db_connection()
+        try:
+            now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            uploader_name = session.get('name', 'Desconocido')
+            conn.execute('''
+                INSERT OR REPLACE INTO file_metadata (filename, uploader_name, upload_date)
+                VALUES (?, ?, ?)
+            ''', (file.filename, uploader_name, now))
+            conn.commit()
+        except Exception:
+            pass
+        finally:
+            conn.close()
+            
+        search_engine.index_files()
+        return jsonify({'success': True, 'filename': file.filename})
+>>>>>>> af529883efc786d2f7bc628ca9b283c3fd82e2d7
 
 @app.route('/admin/delete', methods=['POST'])
 def delete_file():
